@@ -1,0 +1,311 @@
+groups:
+- name: ALL
+  jobs:
+  - plan-tf-dev
+  - apply-tf-dev
+  - plan-tf-nonprod
+  - apply-tf-nonprod
+- name: dev
+  jobs:
+  - plan-tf-dev
+  - apply-tf-dev
+- name: nonprod
+  jobs:
+  - plan-tf-nonprod
+  - apply-tf-nonprod
+resources:
+- name: alert-dev
+  type: slack-dev
+  source:
+    url: ((slack_webhook))
+  tags:
+  - dev
+  icon: slack
+- name: alert-nonprod
+  type: slack-nonprod
+  source:
+    url: ((slack_webhook))
+  tags:
+  - nonprod
+  icon: slack
+- name: ci
+  type: git
+  source:
+    branch: develop
+    private_key: ((gitlab_key))
+    uri: git@git.nonprod.williamhill.plc:trading_development/global-trading-platform/ci-cd/gtp_concourse_jobs.git
+  tags:
+  - dev
+  icon: gitlab
+- name: msk
+  type: git
+  source:
+    branch: develop
+    private_key: ((gitlab_key))
+    uri: git@git.nonprod.williamhill.plc:trading_development/global-trading-platform/infrastructure/aws-msk-cluster.git
+  tags:
+  - dev
+  icon: gitlab
+- name: plan-dev
+  type: s3-dev
+  source:
+    bucket: terraform-plan-bucket
+    region_name: eu-west-1
+    versioned_file: msk/plans/plan.out
+  tags:
+  - dev
+  icon: delete-variant
+- name: plan-nonprod
+  type: s3-nonprod
+  source:
+    bucket: concourse-trading-nonprod-eu-west-1-storage
+    region_name: eu-west-1
+    versioned_file: msk/plans/plan.out
+  tags:
+  - nonprod
+  icon: delete-variant
+resource_types:
+- name: s3-dev
+  type: docker-image
+  source:
+    repository: governmentpaas/s3-resource
+  tags:
+  - dev
+- name: s3-nonprod
+  type: docker-image
+  source:
+    repository: governmentpaas/s3-resource
+  tags:
+  - nonprod
+- name: slack-dev
+  type: docker-image
+  source:
+    repository: cfcommunity/slack-notification-resource
+    tag: v1.4.1
+  tags:
+  - dev
+- name: slack-nonprod
+  type: docker-image
+  source:
+    repository: cfcommunity/slack-notification-resource
+    tag: v1.4.1
+  tags:
+  - nonprod
+jobs:
+- name: plan-tf-dev
+  public: true
+  serial: true
+  plan:
+  - in_parallel:
+      steps:
+      - get: msk
+        trigger: true
+        tags:
+        - dev
+      - get: ci
+        tags:
+        - dev
+  - task: plan-terraform
+    file: ci/pipelines/tasks/terraform/plan-terraform.yaml
+    params:
+      ENV: dev
+      GITLAB_KEY: ((gitlab_key))
+      REGION: eu-west-1
+      TF_FOLDER: terraform
+      VERSION: 0.0.1
+    input_mapping:
+      ci: ci
+      tf: msk
+    output_mapping:
+      plan: plan
+    tags:
+    - dev
+  - task: show-terraform-plan
+    file: ci/pipelines/tasks/terraform/show-terraform-plan.yaml
+    input_mapping:
+      ci: ci
+      plan: plan
+    output_mapping:
+      plan: plan
+    tags:
+    - dev
+  - put: alert-dev
+    params:
+      attachments: |
+        [{
+          "color": "good",
+          "text": "Terraform Plan Succeeded! - <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|#$BUILD_NAME> :sunglasses:"
+        }]
+      username: concourse
+    tags:
+    - dev
+  - put: plan-dev
+    params:
+      file: plan/plan.out
+    tags:
+    - dev
+- name: apply-tf-dev
+  public: true
+  serial: true
+  plan:
+  - in_parallel:
+      steps:
+      - get: msk
+        passed:
+        - plan-tf-dev
+        tags:
+        - dev
+      - get: plan-dev
+        passed:
+        - plan-tf-dev
+        tags:
+        - dev
+      - get: ci
+        tags:
+        - dev
+  - task: apply-plan
+    file: ci/pipelines/tasks/terraform/apply-terraform.yaml
+    params:
+      ENV: dev
+      GITLAB_KEY: ((gitlab_key))
+      REGION: eu-west-1
+      TF_FOLDER: terraform
+      VERSION: 0.0.1
+    input_mapping:
+      ci: ci
+      plan: plan-dev
+      tf: msk
+    tags:
+    - dev
+    on_error:
+      put: alert-dev
+      params:
+        attachments: |
+          [{
+            "color": "danger",
+            "text": "Terraform Apply Failed! - <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|#$BUILD_NAME> :scream:"
+          }]
+        username: concourse
+      tags:
+      - dev
+    on_failure:
+      put: alert-dev
+      params:
+        attachments: |
+          [{
+            "color": "danger",
+            "text": "Terraform Apply Failed! - <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|#$BUILD_NAME> :scream:"
+          }]
+        username: concourse
+      tags:
+      - dev
+- name: plan-tf-nonprod
+  public: true
+  serial: true
+  plan:
+  - in_parallel:
+      steps:
+      - get: msk
+        passed:
+        - apply-tf-dev
+        tags:
+        - nonprod
+      - get: ci
+        tags:
+        - nonprod
+  - task: plan-terraform
+    file: ci/pipelines/tasks/terraform/plan-terraform.yaml
+    params:
+      ENV: nonprod
+      GITLAB_KEY: ((gitlab_key))
+      REGION: eu-west-1
+      TF_FOLDER: terraform
+      VERSION: 0.0.1
+    input_mapping:
+      ci: ci
+      tf: msk
+    output_mapping:
+      plan: plan
+    tags:
+    - nonprod
+  - task: show-terraform-plan
+    file: ci/pipelines/tasks/terraform/show-terraform-plan.yaml
+    input_mapping:
+      ci: ci
+      plan: plan
+    output_mapping:
+      plan: plan
+    tags:
+    - nonprod
+  - put: alert-nonprod
+    params:
+      attachments: |
+        [{
+          "color": "good",
+          "text": "Terraform Plan Succeeded! - <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|#$BUILD_NAME> :sunglasses:"
+        }]
+      username: concourse
+    tags:
+    - nonprod
+  - put: plan-nonprod
+    params:
+      file: plan/plan.out
+    tags:
+    - nonprod
+- name: apply-tf-nonprod
+  public: true
+  serial: true
+  plan:
+  - in_parallel:
+      steps:
+      - get: msk
+        passed:
+        - plan-tf-nonprod
+        tags:
+        - nonprod
+      - get: plan-nonprod
+        passed:
+        - plan-tf-nonprod
+        tags:
+        - nonprod
+      - get: ci
+        passed:
+        - plan-tf-nonprod
+        tags:
+        - nonprod
+  - task: apply-plan
+    file: ci/pipelines/tasks/terraform/apply-terraform.yaml
+    params:
+      ENV: nonprod
+      GITLAB_KEY: ((gitlab_key))
+      REGION: eu-west-1
+      TF_FOLDER: terraform
+      VERSION: 0.0.1
+    input_mapping:
+      ci: ci
+      plan: plan-nonprod
+      tf: msk
+    tags:
+    - nonprod
+    on_error:
+      put: alert-nonprod
+      params:
+        attachments: |
+          [{
+            "color": "danger",
+            "text": "Terraform Apply Failed! - <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|#$BUILD_NAME> :scream:"
+          }]
+        username: concourse
+      tags:
+      - nonprod
+    on_failure:
+      put: alert-nonprod
+      params:
+        attachments: |
+          [{
+            "color": "danger",
+            "text": "Terraform Apply Failed! - <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|#$BUILD_NAME> :scream:"
+          }]
+        username: concourse
+      tags:
+      - nonprod

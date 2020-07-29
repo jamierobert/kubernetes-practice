@@ -1,0 +1,178 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: 2019-07-13T18:34:08Z
+    labels:
+      run: nginx
+    name: nginx
+    namespace: mynamespace
+    resourceVersion: "2649967"
+    selfLink: /api/v1/namespaces/mynamespace/pods/nginx
+    uid: cd00d3fd-a59c-11e9-9e79-025000000001
+  spec:
+    containers:
+    - image: nginx:1.7.1
+      imagePullPolicy: IfNotPresent
+      name: nginx
+      ports:
+      - containerPort: 80
+        protocol: TCP
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: default-token-s8m4c
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    nodeName: docker-for-desktop
+    restartPolicy: Never
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: default-token-s8m4c
+      secret:
+        defaultMode: 420
+        secretName: default-token-s8m4c
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: 2019-07-13T18:34:08Z
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: 2019-07-13T18:34:10Z
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: 2019-07-13T18:34:08Z
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: docker://5fc8bb012d57db3e1b15335d8b60fdc43ba99b2e0401f5cf35ba234a64919c14
+      image: nginx:1.7.1
+      imageID: docker-pullable://nginx@sha256:7fbe0579e123f3d2b29c9159e9a80547fb72621bb419e52d98c679ddbf1055a1
+      lastState:
+        terminated:
+          containerID: docker://9ec1edc56ca55ea9255ef3e9a5c24a9a41608efed056b675223b636560eac8e5
+          exitCode: 0
+          finishedAt: 2019-07-13T18:35:32Z
+          reason: Completed
+          startedAt: 2019-07-13T18:34:09Z
+      name: nginx
+      ready: true
+      restartCount: 1
+      state:
+        running:
+          startedAt: 2019-07-13T18:36:18Z
+    hostIP: 192.168.65.3
+    phase: Running
+    podIP: 10.1.7.229
+    qosClass: BestEffort
+    startTime: 2019-07-13T18:34:08Z
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: 2019-07-13T18:38:44Z
+    labels:
+      run: temp
+    name: temp
+    namespace: mynamespace
+    resourceVersion: "2650150"
+    selfLink: /api/v1/namespaces/mynamespace/pods/temp
+    uid: 7166e394-a59d-11e9-9e79-025000000001
+  spec:
+    containers:
+    - args:
+      - wget
+      - -O-
+      - 10.1.7.229:80
+      image: busybox
+      imagePullPolicy: IfNotPresent
+      name: temp
+      resources: {}
+      stdin: true
+      stdinOnce: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      tty: true
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: default-token-s8m4c
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    nodeName: docker-for-desktop
+    restartPolicy: Never
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: default-token-s8m4c
+      secret:
+        defaultMode: 420
+        secretName: default-token-s8m4c
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: 2019-07-13T18:38:44Z
+      reason: PodCompleted
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: 2019-07-13T18:38:44Z
+      reason: PodCompleted
+      status: "False"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: 2019-07-13T18:38:44Z
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: docker://09da69f35df6e5fbdab1207315aa628cbb9b2ae2bc58f46cd53b90b31db5c4e4
+      image: busybox:latest
+      imageID: docker-pullable://busybox@sha256:c94cf1b87ccb80f2e6414ef913c748b105060debda482058d2b8d0fce39f11b9
+      lastState: {}
+      name: temp
+      ready: false
+      restartCount: 0
+      state:
+        terminated:
+          containerID: docker://09da69f35df6e5fbdab1207315aa628cbb9b2ae2bc58f46cd53b90b31db5c4e4
+          exitCode: 0
+          finishedAt: 2019-07-13T18:38:45Z
+          reason: Completed
+          startedAt: 2019-07-13T18:38:45Z
+    hostIP: 192.168.65.3
+    phase: Succeeded
+    podIP: 10.1.7.231
+    qosClass: BestEffort
+    startTime: 2019-07-13T18:38:44Z
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""

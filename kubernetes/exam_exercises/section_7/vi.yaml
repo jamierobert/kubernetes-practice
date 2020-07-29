@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: boxImage
+  name: bbox-badboy
+spec:
+  volumes:
+    - name: my-volume
+      persistentVolumeClaim:
+        claimName: mypvc
+  containers:
+  - args:
+    - /bin/sh
+    - -c
+    - bollox
+    - sleep 3600
+    image: busybox
+    imagePullPolicy: IfNotPresent

@@ -1,0 +1,20 @@
+apiVersion: authentication.istio.io/v1alpha1
+kind: MeshPolicy
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"authentication.istio.io/v1alpha1","kind":"MeshPolicy","metadata":{"annotations":{},"labels":{"app":"security","chart":"security","heritage":"Tiller","release":"istio"},"name":"default","namespace":""},"spec":{"peers":[{"mtls":{}}]}}
+  creationTimestamp: 2019-06-10T14:48:53Z
+  generation: 1
+  labels:
+    app: security
+    chart: security
+    heritage: Tiller
+    release: istio
+  name: default
+  resourceVersion: "6564487"
+  selfLink: /apis/authentication.istio.io/v1alpha1/meshpolicies/default
+  uid: ddc02aa7-8b8e-11e9-8997-06169a7a2c20
+spec:
+  peers:
+  - mtls: {}

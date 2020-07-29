@@ -1,0 +1,90 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: 2019-05-13T11:43:29Z
+    generateName: nginx-65899c769f-
+    labels:
+      pod-template-hash: "2145573259"
+      run: nginx
+    name: nginx-65899c769f-7nbnc
+    namespace: mynamespace
+    ownerReferences:
+    - apiVersion: extensions/v1beta1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: nginx-65899c769f
+      uid: 53d8ac38-7574-11e9-afbf-025000000001
+    resourceVersion: "739321"
+    selfLink: /api/v1/namespaces/mynamespace/pods/nginx-65899c769f-7nbnc
+    uid: 53dc6b55-7574-11e9-afbf-025000000001
+  spec:
+    containers:
+    - image: nginx
+      imagePullPolicy: Always
+      name: nginx
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: default-token-7lmmm
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    nodeName: docker-for-desktop
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: default-token-7lmmm
+      secret:
+        defaultMode: 420
+        secretName: default-token-7lmmm
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: 2019-05-13T11:43:29Z
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: 2019-05-13T11:43:33Z
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: 2019-05-13T11:43:29Z
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: docker://eb900195e823f1f97e63886ddb19d396ea3360a8528097018fdb65eb5224b750
+      image: nginx:latest
+      imageID: docker-pullable://nginx@sha256:23b4dcdf0d34d4a129755fc6f52e1c6e23bb34ea011b315d87e193033bcd1b68
+      lastState: {}
+      name: nginx
+      ready: true
+      restartCount: 0
+      state:
+        running:
+          startedAt: 2019-05-13T11:43:32Z
+    hostIP: 192.168.65.3
+    phase: Running
+    podIP: 10.1.0.45
+    qosClass: BestEffort
+    startTime: 2019-05-13T11:43:29Z
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""

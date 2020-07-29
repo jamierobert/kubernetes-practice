@@ -1,0 +1,925 @@
+groups:
+- name: ALL
+  jobs:
+  - build-code-TRUSS_104
+  - security-scan-TRUSS_104
+  - build-docker-image-TRUSS_104
+  - test-docker-image-TRUSS_104
+  - deploy-eks-TRUSS_104
+  - smoke-test-TRUSS_104
+  - merge-TRUSS_104
+  - create-merge-request-TRUSS_104
+  - release-TRUSS_104
+  - cleanup-TRUSS_104
+- name: TRUSS_104
+  jobs:
+  - build-code-TRUSS_104
+  - security-scan-TRUSS_104
+  - build-docker-image-TRUSS_104
+  - test-docker-image-TRUSS_104
+  - deploy-eks-TRUSS_104
+  - smoke-test-TRUSS_104
+  - merge-TRUSS_104
+  - create-merge-request-TRUSS_104
+  - release-TRUSS_104
+  - cleanup-TRUSS_104
+resources:
+- name: app-image-TRUSS_104
+  type: docker-image
+  source:
+    insecure_registries:
+    - docker-registry.prod.williamhill.plc
+    password: ((service_account_password))
+    repository: docker-registry.prod.williamhill.plc/trading/kafka-testing-agent-app-truss_104
+    tag: latest
+    username: ((service_account_username))
+  tags:
+  - dev
+  icon: docker
+- name: base-image-TRUSS_104
+  type: docker-image
+  source:
+    insecure_registries:
+    - docker-registry.prod.williamhill.plc
+    password: ((service_account_password))
+    repository: docker-registry.prod.williamhill.plc/trading/whc_trading_java
+    tag: latest
+    username: ((service_account_username))
+  tags:
+  - dev
+  icon: docker
+- name: chartmuseum-TRUSS_104
+  type: chartmuseum-resource-TRUSS_104
+  source:
+    chart_name: kafka-testing-agent
+    helm_repositories:
+      releases: http://chartmuseum.trading.aws-eu-west-1.dev.williamhill.plc/releases/trading
+      snapshots: http://chartmuseum.trading.aws-eu-west-1.dev.williamhill.plc/snapshots/trading
+      stable: http://chartmuseum.trading.aws-eu-west-1.dev.williamhill.plc/external/kubernetes-stable
+    server_url: http://chartmuseum.trading.aws-eu-west-1.dev.williamhill.plc/snapshots/trading/
+  tags:
+  - dev
+- name: ci-code-TRUSS_104
+  type: git
+  source:
+    branch: master
+    private_key: ((gitlab_key))
+    uri: git@git.nonprod.williamhill.plc:trading_development/global-trading-platform/ci-cd/gtp_concourse_jobs.git
+  tags:
+  - dev
+  icon: gitlab
+- name: code-develop-TRUSS_104
+  type: git
+  source:
+    branch: develop
+    private_key: ((gitlab_key))
+    uri: git@git.nonprod.williamhill.plc:central-feeds/kafka-testing-agent.git
+  tags:
+  - dev
+  icon: gitlab
+- name: code-TRUSS_104
+  type: git
+  source:
+    branch: feature/TRUSS-104
+    private_key: ((gitlab_key))
+    uri: git@git.nonprod.williamhill.plc:central-feeds/kafka-testing-agent.git
+  tags:
+  - dev
+  icon: gitlab
+- name: helm-chart-TRUSS_104
+  type: helm-chart-deployment-TRUSS_104
+  source:
+    cluster_name: trading-eks
+    helm_repositories:
+      releases: http://chartmuseum.trading.aws-eu-west-1.dev.williamhill.plc/releases/trading
+      snapshots: http://chartmuseum.trading.aws-eu-west-1.dev.williamhill.plc/snapshots/trading
+      stable: http://chartmuseum.trading.aws-eu-west-1.dev.williamhill.plc/external/kubernetes-stable
+    region: eu-west-1
+  tags:
+  - dev
+- name: helm-TRUSS_104
+  type: git
+  source:
+    branch: feature/TRUSS-104
+    paths:
+    - chart/*
+    private_key: ((gitlab_key))
+    uri: git@git.nonprod.williamhill.plc:central-feeds/kafka-testing-agent.git
+  tags:
+  - dev
+  icon: gitlab
+- name: jira-TRUSS_104
+  type: jira-resource-TRUSS_104
+  source:
+    password: ((service_account_password))
+    url: https://jira.willhillatlas.com
+    username: ((service_account_username))
+  tags:
+  - dev
+  icon: jira
+- name: metadata-TRUSS_104
+  type: metadata-dump-TRUSS_104
+  source: {}
+  tags:
+  - dev
+- name: notify-TRUSS_104
+  type: slack-TRUSS_104
+  source:
+    url: ((slack_webhook))
+  tags:
+  - dev
+  icon: slack
+- name: test-pack-code-TRUSS_104
+  type: git
+  source:
+    branch: develop
+    private_key: ((gitlab_key))
+    uri: git@git.nonprod.williamhill.plc:central-feeds/gtp-functional-test-pack.git
+  tags:
+  - dev
+  icon: gitlab
+- name: trading-uber-chart-TRUSS_104
+  type: git
+  source:
+    branch: master
+    private_key: ((gitlab_key))
+    uri: git@git.nonprod.williamhill.plc:trading_development/global-trading-platform/trading-uber-chart.git
+  tags:
+  - dev
+  icon: gitlab
+resource_types:
+- name: chartmuseum-resource-TRUSS_104
+  type: docker-image
+  source:
+    insecure_registries:
+    - docker-registry.prod.williamhill.plc
+    password: ((service_account_password))
+    repository: docker-registry.prod.williamhill.plc/trading/concourse-chartmuseum-resource
+    tag: latest
+    username: ((service_account_username))
+  tags:
+  - dev
+- name: chartmuseum-resource-TRUSS_104
+  type: docker-image
+  source:
+    insecure_registries:
+    - docker-registry.prod.williamhill.plc
+    password: ((service_account_password))
+    repository: docker-registry.prod.williamhill.plc/trading/concourse-chartmuseum-resource
+    tag: latest
+    username: ((service_account_username))
+  tags:
+  - dev
+- name: helm-chart-deployment-TRUSS_104
+  type: docker-image
+  source:
+    insecure_registries:
+    - docker-registry.prod.williamhill.plc
+    password: ((service_account_password))
+    repository: docker-registry.prod.williamhill.plc/trading/concourse-helm-chart-resource
+    tag: latest
+    username: ((service_account_username))
+  tags:
+  - dev
+- name: helm-chart-deployment-TRUSS_104
+  type: docker-image
+  source:
+    insecure_registries:
+    - docker-registry.prod.williamhill.plc
+    password: ((service_account_password))
+    repository: docker-registry.prod.williamhill.plc/trading/concourse-helm-chart-resource
+    tag: latest
+    username: ((service_account_username))
+  tags:
+  - dev
+- name: jira-resource-TRUSS_104
+  type: docker-image
+  source:
+    insecure_registries:
+    - docker-registry.prod.williamhill.plc
+    password: ((service_account_password))
+    repository: docker-registry.prod.williamhill.plc/trading/concourse-jira-resource
+    tag: latest
+    username: ((service_account_username))
+  tags:
+  - dev
+- name: jira-resource-TRUSS_104
+  type: docker-image
+  source:
+    insecure_registries:
+    - docker-registry.prod.williamhill.plc
+    password: ((service_account_password))
+    repository: docker-registry.prod.williamhill.plc/trading/concourse-jira-resource
+    tag: latest
+    username: ((service_account_username))
+  tags:
+  - dev
+- name: metadata-dump-TRUSS_104
+  type: docker-image
+  source:
+    insecure_registries:
+    - docker-registry.prod.williamhill.plc
+    password: ((service_account_password))
+    repository: docker-registry.prod.williamhill.plc/trading/concourse-metadata-dump-resource
+    tag: latest
+    username: ((service_account_username))
+  tags:
+  - dev
+- name: metadata-dump-TRUSS_104
+  type: docker-image
+  source:
+    insecure_registries:
+    - docker-registry.prod.williamhill.plc
+    password: ((service_account_password))
+    repository: docker-registry.prod.williamhill.plc/trading/concourse-metadata-dump-resource
+    tag: latest
+    username: ((service_account_username))
+  tags:
+  - dev
+- name: slack-TRUSS_104
+  type: docker-image
+  source:
+    repository: cfcommunity/slack-notification-resource
+    tag: latest
+  tags:
+  - dev
+jobs:
+- name: build-code-TRUSS_104
+  public: true
+  serial: true
+  build_logs_to_retain: 20
+  plan:
+  - in_parallel:
+      steps:
+      - get: code-TRUSS_104
+        trigger: true
+        tags:
+        - dev
+      - get: ci-code-TRUSS_104
+        tags:
+        - dev
+      - get: metadata-TRUSS_104
+        tags:
+        - dev
+  - task: prepare-slack-start-message
+    file: ci-code-TRUSS_104/pipelines/tasks/maven/build-start-slack.yaml
+    vars:
+      branch: feature/TRUSS-104
+      project_name: kafka-testing-agent
+    input_mapping:
+      code: code-TRUSS_104
+    tags:
+    - dev
+  - put: notify-TRUSS_104
+    params:
+      attachments_file: slack/attachments
+      silent: true
+      username: concourse
+    tags:
+    - dev
+  - task: maven-build
+    privileged: true
+    file: ci-code-TRUSS_104/pipelines/tasks/maven/build.yaml
+    input_mapping:
+      code: code-TRUSS_104
+      metadata: metadata-TRUSS_104
+    tags:
+    - dev
+    attempts: 2
+  - try:
+      task: code-analysis
+      file: ci-code-TRUSS_104/pipelines/tasks/maven/sonar.yaml
+      vars:
+        version: TRUSS-104
+      tags:
+      - dev
+  on_abort:
+    task: prepare-slack-abort-message
+    file: ci-code-TRUSS_104/pipelines/tasks/slack/general-abort.yaml
+    vars:
+      branch: feature/TRUSS-104
+      project_name: kafka-testing-agent
+    tags:
+    - dev
+  on_failure:
+    task: prepare-slack-failure-message
+    file: ci-code-TRUSS_104/pipelines/tasks/slack/general-failure.yaml
+    vars:
+      branch: feature/TRUSS-104
+      project_name: kafka-testing-agent
+    tags:
+    - dev
+  ensure:
+    put: notify-TRUSS_104
+    params:
+      attachments_file: slack/attachments
+      silent: true
+      username: concourse
+    tags:
+    - dev
+  on_success:
+    task: prepare-slack-success-message
+    file: ci-code-TRUSS_104/pipelines/tasks/maven/build-finish-slack.yaml
+    vars:
+      branch: feature/TRUSS-104
+      project_name: kafka-testing-agent
+    input_mapping:
+      code: code-TRUSS_104
+    tags:
+    - dev
+- name: security-scan-TRUSS_104
+  public: true
+  build_logs_to_retain: 20
+  plan:
+  - in_parallel:
+      steps:
+      - get: code-TRUSS_104
+        passed:
+        - build-code-TRUSS_104
+        trigger: true
+        tags:
+        - dev
+      - get: ci-code-TRUSS_104
+        tags:
+        - dev
+  - task: security-scan
+    privileged: true
+    file: ci-code-TRUSS_104/pipelines/tasks/security-scan.yaml
+    input_mapping:
+      code: code-TRUSS_104
+    tags:
+    - dev
+- name: build-docker-image-TRUSS_104
+  public: true
+  serial: true
+  build_logs_to_retain: 20
+  plan:
+  - in_parallel:
+      steps:
+      - get: code-TRUSS_104
+        passed:
+        - build-code-TRUSS_104
+        trigger: true
+        tags:
+        - dev
+      - get: ci-code-TRUSS_104
+        tags:
+        - dev
+      - get: metadata-TRUSS_104
+        tags:
+        - dev
+  - task: deploy
+    privileged: true
+    file: ci-code-TRUSS_104/pipelines/tasks/maven/deploy.yaml
+    input_mapping:
+      code: code-TRUSS_104
+      metadata: metadata-TRUSS_104
+    tags:
+    - dev
+  - get: base-image-TRUSS_104
+    params:
+      save: true
+    tags:
+    - dev
+  - put: app-image-TRUSS_104
+    params:
+      additional_tags: output/additional_tags
+      build: output/kafka-testing-agent-app
+      cache_from:
+      - base-image-TRUSS_104
+      tag_as_latest: true
+    get_params:
+      skip_download: true
+    tags:
+    - dev
+  on_failure:
+    do:
+    - task: prepare-slack-failure-message
+      file: ci-code-TRUSS_104/pipelines/tasks/slack/general-failure.yaml
+      vars:
+        branch: feature/TRUSS-104
+        project_name: kafka-testing-agent
+      tags:
+      - dev
+    - put: notify-TRUSS_104
+      params:
+        attachments_file: slack/attachments
+        silent: true
+        username: concourse
+      tags:
+      - dev
+- name: test-docker-image-TRUSS_104
+  public: true
+  serial: true
+  build_logs_to_retain: 20
+  plan:
+  - in_parallel:
+      steps:
+      - get: code-TRUSS_104
+        passed:
+        - build-docker-image-TRUSS_104
+        tags:
+        - dev
+      - get: ci-code-TRUSS_104
+        tags:
+        - dev
+      - get: app-image-TRUSS_104
+        passed:
+        - build-docker-image-TRUSS_104
+        trigger: true
+        params:
+          save: true
+        tags:
+        - dev
+  - task: test
+    privileged: true
+    file: code-TRUSS_104/ci/image-smoke-test.yaml
+    vars:
+      image-name: docker-registry.prod.williamhill.plc/trading/kafka-testing-agent-app-truss_104:latest
+    input_mapping:
+      code: code-TRUSS_104
+      image: app-image-TRUSS_104
+    tags:
+    - dev
+  on_failure:
+    do:
+    - task: prepare-slack-failure-message
+      file: ci-code-TRUSS_104/pipelines/tasks/slack/general-failure.yaml
+      vars:
+        branch: feature/TRUSS-104
+        project_name: kafka-testing-agent
+      tags:
+      - dev
+    - put: notify-TRUSS_104
+      params:
+        attachments_file: slack/attachments
+        silent: true
+        username: concourse
+      tags:
+      - dev
+- name: deploy-eks-TRUSS_104
+  public: true
+  serial: true
+  build_logs_to_retain: 20
+  plan:
+  - in_parallel:
+      steps:
+      - get: app-image-TRUSS_104
+        passed:
+        - test-docker-image-TRUSS_104
+        trigger: true
+        tags:
+        - dev
+      - get: code-TRUSS_104
+        passed:
+        - test-docker-image-TRUSS_104
+        tags:
+        - dev
+      - get: helm-TRUSS_104
+        tags:
+        - dev
+      - get: trading-uber-chart-TRUSS_104
+        tags:
+        - dev
+      - get: ci-code-TRUSS_104
+        tags:
+        - dev
+  - task: maven-version-TRUSS_104
+    file: ci-code-TRUSS_104/pipelines/tasks/maven/version.yaml
+    input_mapping:
+      code: code-TRUSS_104
+    tags:
+    - dev
+  - put: chartmuseum-TRUSS_104
+    params:
+      app_version_file: version/maven.version
+      chart_path: helm-TRUSS_104/chart/kafka-testing-agent
+      child_of:
+      - snapshots/truss_104-trading-stack:latest
+      - releases/trading-stack:latest
+      force: true
+      rename_parent_to: truss_104-trading-stack
+    tags:
+    - dev
+  - put: helm-chart-TRUSS_104
+    params:
+      chart_name: truss_104-trading-stack
+      chart_repo: snapshots
+      namespace: truss_104
+      namespace_labels:
+        istio-injection: enabled
+      overrides:
+        global.cluster: trading-eks
+        global.namespace: truss_104
+      try_install: true
+      values_files:
+      - trading-uber-chart-TRUSS_104/envs/dev/values.yaml
+      version: latest
+    tags:
+    - dev
+  - put: helm-chart-TRUSS_104
+    params:
+      chart_name: truss_104-trading-stack
+      chart_repo: snapshots
+      namespace: truss_104
+      overrides:
+        kafka-testing-agent.images.repository: docker-registry.prod.williamhill.plc/trading/kafka-testing-agent-app-truss_104
+        kafka-testing-agent.images.tag: latest
+      version: latest
+    tags:
+    - dev
+  - task: health-check
+    privileged: true
+    file: ci-code-TRUSS_104/pipelines/tasks/eks/dev-health-check.yaml
+    vars:
+      cluster_name: trading-eks
+      namespace: truss_104
+      project_name: kafka-testing-agent
+    input_mapping:
+      ci-code: ci-code-TRUSS_104
+    tags:
+    - dev
+  - try:
+      put: jira-TRUSS_104
+      params:
+        action: comment
+        comment:
+          text: kafka-testing-agent deployed to dev environment.
+        issue: TRUSS-104
+      tags:
+      - dev
+  on_failure:
+    task: prepare-slack-failure-message
+    file: ci-code-TRUSS_104/pipelines/tasks/eks/dev-deploy-slack-failure.yaml
+    vars:
+      branch: feature/TRUSS-104
+      jira: TRUSS-104
+      jira_link: https://jira.willhillatlas.com/browse/TRUSS-104
+      project_link: https://git.nonprod.williamhill.plc/central-feeds/kafka-testing-agent
+      project_name: kafka-testing-agent
+    tags:
+    - dev
+  ensure:
+    put: notify-TRUSS_104
+    params:
+      attachments_file: slack/attachments
+      silent: true
+      username: concourse
+    tags:
+    - dev
+  on_success:
+    task: prepare-slack-success-message
+    file: ci-code-TRUSS_104/pipelines/tasks/eks/dev-deploy-slack-success.yaml
+    vars:
+      branch: feature/TRUSS-104
+      cluster_name: trading-eks
+      jira: TRUSS-104
+      jira_link: https://jira.willhillatlas.com/browse/TRUSS-104
+      namespace: truss_104
+      project_name: kafka-testing-agent
+    tags:
+    - dev
+- name: smoke-test-TRUSS_104
+  public: true
+  serial: true
+  build_logs_to_retain: 20
+  plan:
+  - in_parallel:
+      steps:
+      - get: ci-code-TRUSS_104
+        tags:
+        - dev
+      - get: code-TRUSS_104
+        passed:
+        - deploy-eks-TRUSS_104
+        trigger: true
+        tags:
+        - dev
+      - get: test-pack-code-TRUSS_104
+        tags:
+        - dev
+  - task: smoke-test
+    privileged: true
+    file: ci-code-TRUSS_104/pipelines/tasks/tests/test-pack.yaml
+    vars:
+      cluster_name: trading-eks
+      namespace: truss_104
+      project_name: kafka-testing-agent
+    input_mapping:
+      ci-code: ci-code-TRUSS_104
+      code: test-pack-code-TRUSS_104
+    tags:
+    - dev
+    on_failure:
+      do:
+      - task: prepare-slack-failure-message
+        file: ci-code-TRUSS_104/pipelines/tasks/slack/general-failure.yaml
+        vars:
+          branch: feature/TRUSS-104
+          project_name: kafka-testing-agent
+        tags:
+        - dev
+      - put: notify-TRUSS_104
+        params:
+          attachments_file: slack/attachments
+          silent: true
+          username: concourse
+        tags:
+        - dev
+    on_success:
+      try:
+        put: jira-TRUSS_104
+        params:
+          action: comment
+          comment:
+            text: kafka-testing-agent passed smoke test in dev environment.
+          issue: TRUSS-104
+        tags:
+        - dev
+- name: merge-TRUSS_104
+  public: true
+  serial: true
+  serial_groups:
+  - release
+  build_logs_to_retain: 20
+  plan:
+  - in_parallel:
+      steps:
+      - get: code-TRUSS_104
+        passed:
+        - smoke-test-TRUSS_104
+        tags:
+        - dev
+      - get: ci-code-TRUSS_104
+        tags:
+        - dev
+  - task: feature-finish
+    privileged: true
+    file: ci-code-TRUSS_104/pipelines/tasks/maven/feature-finish.yaml
+    vars:
+      branch: feature/TRUSS-104
+      git_repo: git@git.nonprod.williamhill.plc:central-feeds/kafka-testing-agent.git
+    input_mapping:
+      ci-code: ci-code-TRUSS_104
+      code: code-TRUSS_104
+    tags:
+    - dev
+    on_abort:
+      task: prepare-slack-abort-message
+      file: ci-code-TRUSS_104/pipelines/tasks/slack/general-abort.yaml
+      vars:
+        branch: feature/TRUSS-104
+        project_name: kafka-testing-agent
+      tags:
+      - dev
+    on_failure:
+      task: prepare-slack-failure-message
+      file: ci-code-TRUSS_104/pipelines/tasks/maven/feature-finish-slack-failure.yaml
+      vars:
+        branch: feature/TRUSS-104
+        jira: TRUSS-104
+        jira_link: https://jira.willhillatlas.com/browse/TRUSS-104
+        project_link: https://git.nonprod.williamhill.plc/central-feeds/kafka-testing-agent
+        project_name: kafka-testing-agent
+      tags:
+      - dev
+    ensure:
+      put: notify-TRUSS_104
+      params:
+        attachments_file: slack/attachments
+        silent: true
+        username: concourse
+      tags:
+      - dev
+    on_success:
+      task: prepare-slack-success-message
+      file: ci-code-TRUSS_104/pipelines/tasks/maven/feature-finish-slack-success.yaml
+      vars:
+        branch: feature/TRUSS-104
+        jira: TRUSS-104
+        jira_link: https://jira.willhillatlas.com/browse/TRUSS-104
+        project_link: https://git.nonprod.williamhill.plc/central-feeds/kafka-testing-agent
+        project_name: kafka-testing-agent
+      tags:
+      - dev
+    attempts: 2
+- name: create-merge-request-TRUSS_104
+  public: true
+  serial: true
+  build_logs_to_retain: 20
+  plan:
+  - in_parallel:
+      steps:
+      - get: code-TRUSS_104
+        passed:
+        - deploy-eks-TRUSS_104
+        tags:
+        - dev
+      - get: ci-code-TRUSS_104
+        tags:
+        - dev
+  - task: create-merge-request
+    privileged: true
+    file: ci-code-TRUSS_104/pipelines/tasks/merge-requests/create.yaml
+    vars:
+      normalised_branch: truss_104
+      project_api_url: https://git.nonprod.williamhill.plc/api/v4/projects/11465
+      source_branch: feature/TRUSS-104
+      target_branch: develop
+      title: 'TRUSS-104: Deployed to EKS dev environment'
+    input_mapping:
+      ci-code: ci-code-TRUSS_104
+    tags:
+    - dev
+    on_failure:
+      do:
+      - task: prepare-slack-failure-message
+        file: ci-code-TRUSS_104/pipelines/tasks/slack/general-failure.yaml
+        vars:
+          branch: feature/TRUSS-104
+          project_name: kafka-testing-agent
+        tags:
+        - dev
+      - put: notify-TRUSS_104
+        params:
+          attachments_file: slack/attachments
+          silent: true
+          username: concourse
+        tags:
+        - dev
+    on_success:
+      do:
+      - task: prepare-slack-success-message
+        file: ci-code-TRUSS_104/pipelines/tasks/merge-requests/slack-success.yaml
+        vars:
+          branch: feature/TRUSS-104
+          jira: TRUSS-104
+          jira_link: https://jira.willhillatlas.com/browse/TRUSS-104
+          project_link: https://git.nonprod.williamhill.plc/central-feeds/kafka-testing-agent
+          project_name: kafka-testing-agent
+        tags:
+        - dev
+      - put: notify-TRUSS_104
+        params:
+          attachments_file: slack/attachments
+          channel: '#aws-heroes-mr'
+          silent: true
+          username: concourse
+        tags:
+        - dev
+- name: release-TRUSS_104
+  public: true
+  serial: true
+  serial_groups:
+  - release
+  build_logs_to_retain: 20
+  plan:
+  - in_parallel:
+      steps:
+      - get: code-TRUSS_104
+        passed:
+        - merge-TRUSS_104
+        trigger: true
+        tags:
+        - dev
+      - get: code-develop-TRUSS_104
+        tags:
+        - dev
+      - get: ci-code-TRUSS_104
+        tags:
+        - dev
+  - task: prepare-slack-start-message
+    file: ci-code-TRUSS_104/pipelines/tasks/maven/release-start-slack.yaml
+    vars:
+      branch: feature/TRUSS-104
+      project_link: https://git.nonprod.williamhill.plc/central-feeds/kafka-testing-agent
+      project_name: kafka-testing-agent
+    tags:
+    - dev
+  - put: notify-TRUSS_104
+    params:
+      attachments_file: slack/attachments
+      silent: true
+      username: concourse
+    tags:
+    - dev
+  - task: release
+    privileged: true
+    file: ci-code-TRUSS_104/pipelines/tasks/maven/release.yaml
+    vars:
+      git_repo: git@git.nonprod.williamhill.plc:central-feeds/kafka-testing-agent.git
+    input_mapping:
+      ci-code: ci-code-TRUSS_104
+      code: code-develop-TRUSS_104
+    tags:
+    - dev
+    on_abort:
+      task: prepare-slack-abort-message
+      file: ci-code-TRUSS_104/pipelines/tasks/slack/general-abort.yaml
+      vars:
+        branch: feature/TRUSS-104
+        project_name: kafka-testing-agent
+      tags:
+      - dev
+    on_failure:
+      task: prepare-slack-failure-message
+      file: ci-code-TRUSS_104/pipelines/tasks/slack/general-failure.yaml
+      vars:
+        branch: feature/TRUSS-104
+        project_name: kafka-testing-agent
+      tags:
+      - dev
+    ensure:
+      put: notify-TRUSS_104
+      params:
+        attachments_file: slack/attachments
+        silent: true
+        username: concourse
+      tags:
+      - dev
+    on_success:
+      task: prepare-slack-success-message
+      file: ci-code-TRUSS_104/pipelines/tasks/maven/release-finish-slack.yaml
+      vars:
+        branch: feature/TRUSS-104
+        project_link: https://git.nonprod.williamhill.plc/central-feeds/kafka-testing-agent
+        project_name: kafka-testing-agent
+      tags:
+      - dev
+- name: cleanup-TRUSS_104
+  public: true
+  serial: true
+  build_logs_to_retain: 20
+  plan:
+  - in_parallel:
+      steps:
+      - get: ci-code-TRUSS_104
+        tags:
+        - dev
+      - get: code-TRUSS_104
+        passed:
+        - release-TRUSS_104
+        trigger: true
+        tags:
+        - dev
+  - task: cleanup-resources
+    privileged: true
+    file: ci-code-TRUSS_104/pipelines/tasks/cleanup/dev-cleanup-resources.yaml
+    vars:
+      chart_museum: http://chartmuseum.trading.aws-eu-west-1.dev.williamhill.plc/snapshots/trading
+      chart_name: truss_104-trading-stack
+      cluster_name: trading-eks
+      docker_registry: https://nexus.dtc.prod.williamhill.plc:8443/repository/whc_docker/v2
+      image_name: trading/kafka-testing-agent-app-truss_104
+      namespace: truss_104
+    input_mapping:
+      ci-code: ci-code-TRUSS_104
+      code: code-TRUSS_104
+    tags:
+    - dev
+  - task: cleanup-branches
+    privileged: true
+    file: ci-code-TRUSS_104/pipelines/tasks/cleanup/dev-cleanup-branches.yaml
+    vars:
+      branch: feature/TRUSS-104
+      git_repo: git@git.nonprod.williamhill.plc:central-feeds/kafka-testing-agent.git
+    input_mapping:
+      ci-code: ci-code-TRUSS_104
+      code: code-TRUSS_104
+    tags:
+    - dev
+  on_abort:
+    task: prepare-slack-abort-message
+    file: ci-code-TRUSS_104/pipelines/tasks/slack/general-abort.yaml
+    vars:
+      branch: feature/TRUSS-104
+      project_name: kafka-testing-agent
+    tags:
+    - dev
+  on_failure:
+    task: prepare-slack-failure-message
+    file: ci-code-TRUSS_104/pipelines/tasks/cleanup/dev-cleanup-slack-failure.yaml
+    vars:
+      branch: feature/TRUSS-104
+      jira: TRUSS-104
+      jira_link: https://jira.willhillatlas.com/browse/TRUSS-104
+      project_link: https://git.nonprod.williamhill.plc/central-feeds/kafka-testing-agent
+      project_name: kafka-testing-agent
+    tags:
+    - dev
+  ensure:
+    put: notify-TRUSS_104
+    params:
+      attachments_file: slack/attachments
+      silent: true
+      username: concourse
+    tags:
+    - dev
+  on_success:
+    task: prepare-slack-success-message
+    file: ci-code-TRUSS_104/pipelines/tasks/slack/general-success.yaml
+    vars:
+      branch: feature/TRUSS-104
+      project_name: kafka-testing-agent
+    tags:
+    - dev

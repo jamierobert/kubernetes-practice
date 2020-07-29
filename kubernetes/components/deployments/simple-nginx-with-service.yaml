@@ -1,0 +1,244 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2019-09-27T10:41:31Z"
+    generateName: nginx-exposed-6b88f796cf-
+    labels:
+      pod-template-hash: 6b88f796cf
+      run: nginx-exposed
+    name: nginx-exposed-6b88f796cf-hvt4d
+    namespace: my-namespace
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: nginx-exposed-6b88f796cf
+      uid: 5e4334e1-e113-11e9-b84e-025000000001
+    resourceVersion: "549843"
+    selfLink: /api/v1/namespaces/my-namespace/pods/nginx-exposed-6b88f796cf-hvt4d
+    uid: 5e4625ec-e113-11e9-b84e-025000000001
+  spec:
+    containers:
+    - image: nginx
+      imagePullPolicy: Always
+      name: nginx-exposed
+      ports:
+      - containerPort: 80
+        protocol: TCP
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: default-token-j89q6
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: docker-desktop
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: default-token-j89q6
+      secret:
+        defaultMode: 420
+        secretName: default-token-j89q6
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2019-09-27T10:41:31Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2019-09-27T10:41:35Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2019-09-27T10:41:35Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2019-09-27T10:41:31Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: docker://64090a7c923ad5cd3a5586616babe72c890ca2a70bb821ac48d134ff121ec64f
+      image: nginx:latest
+      imageID: docker-pullable://nginx@sha256:aeded0f2a861747f43a01cf1018cf9efe2bdd02afd57d2b11fcc7fcadc16ccd1
+      lastState: {}
+      name: nginx-exposed
+      ready: true
+      restartCount: 0
+      state:
+        running:
+          startedAt: "2019-09-27T10:41:34Z"
+    hostIP: 192.168.65.3
+    phase: Running
+    podIP: 10.1.9.204
+    qosClass: BestEffort
+    startTime: "2019-09-27T10:41:31Z"
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: "2019-09-27T10:41:31Z"
+    name: nginx-exposed
+    namespace: my-namespace
+    resourceVersion: "549831"
+    selfLink: /api/v1/namespaces/my-namespace/services/nginx-exposed
+    uid: 5e4e294d-e113-11e9-b84e-025000000001
+  spec:
+    clusterIP: 10.99.180.237
+    ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 80
+    selector:
+      run: nginx-exposed
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2019-09-27T10:41:31Z"
+    generation: 1
+    labels:
+      run: nginx-exposed
+    name: nginx-exposed
+    namespace: my-namespace
+    resourceVersion: "549846"
+    selfLink: /apis/apps/v1/namespaces/my-namespace/deployments/nginx-exposed
+    uid: 5e41a9e8-e113-11e9-b84e-025000000001
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        run: nginx-exposed
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          run: nginx-exposed
+      spec:
+        containers:
+        - image: nginx
+          imagePullPolicy: Always
+          name: nginx-exposed
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2019-09-27T10:41:35Z"
+      lastUpdateTime: "2019-09-27T10:41:35Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2019-09-27T10:41:31Z"
+      lastUpdateTime: "2019-09-27T10:41:35Z"
+      message: ReplicaSet "nginx-exposed-6b88f796cf" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2019-09-27T10:41:31Z"
+    generation: 1
+    labels:
+      pod-template-hash: 6b88f796cf
+      run: nginx-exposed
+    name: nginx-exposed-6b88f796cf
+    namespace: my-namespace
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: nginx-exposed
+      uid: 5e41a9e8-e113-11e9-b84e-025000000001
+    resourceVersion: "549844"
+    selfLink: /apis/apps/v1/namespaces/my-namespace/replicasets/nginx-exposed-6b88f796cf
+    uid: 5e4334e1-e113-11e9-b84e-025000000001
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        pod-template-hash: 6b88f796cf
+        run: nginx-exposed
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          pod-template-hash: 6b88f796cf
+          run: nginx-exposed
+      spec:
+        containers:
+        - image: nginx
+          imagePullPolicy: Always
+          name: nginx-exposed
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
